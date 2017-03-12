@@ -1,0 +1,33 @@
+//在node环境下解析excel表格数据
+let xl = require('node-xlrd');
+
+function test(req,resp){
+    console.log(resp);
+    let path='test.xls';
+    let datas=[];
+    xl.open(path,function(err,bk){
+        if (err) {console.log(err.name, err.message); return;}
+        var shtCount = bk.sheet.count;
+        //console.log(shtCount);
+        for(var sIdx = 0; sIdx < shtCount; sIdx++ ){
+            var sht = bk.sheets[sIdx],
+                rCount = sht.row.count,
+                cCount = sht.column.count;
+            for(var rIdx = 0; rIdx < rCount; rIdx++){	// rIdx：行数；cIdx：列数
+                var data = [];
+                for(var cIdx = 0; cIdx < cCount; cIdx++){
+                    try{
+                        data[cIdx] = sht.cell(rIdx,cIdx);
+                    }catch(e){
+                        console.log(e.message);
+                    }
+                }
+                datas[rIdx] = data;
+            }
+        }
+        //req.datas = datas;
+        console.log(datas);
+        resp.send(datas)
+    });
+}
+
